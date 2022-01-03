@@ -7,7 +7,7 @@ module.exports = {
     ? process.env.PG_CONNECTION_STRING
     : {
         host: "127.0.0.1",
-        port: 5000,
+        port: 5432,
         user: "user",
         password: "password",
         database: "database",

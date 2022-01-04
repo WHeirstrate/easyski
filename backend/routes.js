@@ -28,16 +28,11 @@ const addUser = (req, res) => {
     });
 };
 
-const addTable = (req, res) => {
-  KNEX.schema
-    .createTable("users", async function (table) {
-      table.increments("id");
-      table.string("name", 255).notNullable();
-      table.string("email", 255);
-      table.timestamps();
-    })
-    .then((table) => {
-      res.send("Table created");
+const getAllUsers = (req, res) => {
+  KNEX.select()
+    .from("users")
+    .then((data) => {
+      return res.status(200).json(data);
     });
 };
 
@@ -47,6 +42,6 @@ const addTable = (req, res) => {
 
 APP.get("/", (req, res) => baseRoute(req, res));
 APP.post("/users/addUser", (req, res) => addUser(req, res));
-APP.get("/addTable", (req, res) => addTable(req, res));
+APP.get("/users/all", (req, res) => getAllUsers(req, res));
 
 module.exports = APP;

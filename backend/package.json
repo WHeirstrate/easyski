@@ -7,7 +7,9 @@
     "start": "nodemon server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "migrate": "knex migrate:latest --knexfile database/knexfile.js",
-    "seed": "knex seed:run --knexfile database/knexfile.js"
+    "seed": "knex seed:run --knexfile database/knexfile.js",
+    "rollback": "knex migrate:rollback --all --knexfile database/knexfile.js",
+    "fresh": "npm run rollback & npm run migrate & npm run seed"
   },
   "author": "Wouter Heirstrate",
   "license": "MIT",

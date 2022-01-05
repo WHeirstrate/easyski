@@ -1,5 +1,5 @@
-exports.up = function (KNEX) {
-  return KNEX.schema.createTable("point_track", async (table) => {
+exports.up = async function (KNEX) {
+  return await KNEX.schema.createTable("point_track", async (table) => {
     table
       .uuid("point_uuid")
       .notNullable()

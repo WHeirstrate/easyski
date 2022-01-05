@@ -1,6 +1,7 @@
 const EXPRESS = require("express");
 const APP = EXPRESS();
-const KNEX = require("./database/config");
+const USER_ROUTER = require("./routes/userRouter");
+const WEB_ROUTER = require("./routes/webRouter");
 
 APP.use(
   EXPRESS.urlencoded({
@@ -17,31 +18,13 @@ const baseRoute = (req, res) => {
   res.send("Easyski API running!");
 };
 
-const addUser = (req, res) => {
-  KNEX("users")
-    .insert({
-      name: req.body.name,
-    })
-    .returning("*")
-    .then((data) => {
-      return res.status(200).send(data);
-    });
-};
-
-const getAllUsers = (req, res) => {
-  KNEX.select()
-    .from("users")
-    .then((data) => {
-      return res.status(200).json(data);
-    });
-};
-
 //-----------------
 //------ROUTES-----
 //-----------------
 
+APP.use("/users", USER_ROUTER);
+APP.use("/web", WEB_ROUTER);
+
 APP.get("/", (req, res) => baseRoute(req, res));
-APP.post("/users/addUser", (req, res) => addUser(req, res));
-APP.get("/users/all", (req, res) => getAllUsers(req, res));
 
 module.exports = APP;

@@ -2,12 +2,8 @@ exports.up = async function (KNEX) {
   return await KNEX.schema.createTable("points", async (table) => {
     //table.primary(["id", "uuid"]);
     //table.increments("id");
-    table.specificType("id", "serial");
-    table
-      .uuid("uuid")
-      .notNullable()
-      .defaultTo(KNEX.raw("gen_random_uuid()"))
-      .primary();
+    table.increments("id");
+    table.uuid("uuid").notNullable().defaultTo(KNEX.raw("gen_random_uuid()"));
     table.integer("area_id").defaultTo(1).notNullable();
     table.double("latitude").notNullable();
     table.double("longtitude").notNullable();

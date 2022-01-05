@@ -1,15 +1,16 @@
 exports.up = async function (KNEX) {
   return await KNEX.schema.createTable("point_track", async (table) => {
+    table.increments("id");
     table
-      .uuid("point_uuid")
+      .integer("point_id")
       .notNullable()
-      .references("uuid")
+      .references("id")
       .inTable("points")
       .onDelete("RESTRICT");
     table
-      .uuid("track_uuid")
+      .integer("track_id")
       .notNullable()
-      .references("uuid")
+      .references("id")
       .inTable("tracks")
       .onDelete("RESTRICT");
   });

@@ -3,6 +3,7 @@ exports.up = async function (KNEX) {
     table.increments("id");
     table.uuid("uuid").notNullable().defaultTo(KNEX.raw("gen_random_uuid()"));
     table.string("full_name").notNullable().unique();
+    table.string("password");
     table.integer("access_code");
     table.bigInteger("login_validity");
   });

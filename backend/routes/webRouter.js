@@ -1,32 +1,24 @@
 const EXPRESS = require("express");
 const KNEX = require("../database/config");
+const HELPER = require("./helpers/helpers");
 const WEB_ROUTER = EXPRESS.Router();
 
-async function codeCheck(code) {
-  return KNEX("users")
-    .where("access_code", code)
-    .first()
-    .then((user) => {
-      console.log("user", user);
-      console.log("validity", user.login_validity);
-      if (user.login_validity >= Math.ceil(Date.now() / 1000)) return user;
-      return undefined;
-    });
-}
-
-const loginWithCode = (req, res) => {
+const loginWithCode = async (req, res) => {
   const code = req.body.code;
-  return codeCheck(code).then((user) => {
-    console.log("user", user);
-    if (!user) {
-      return res
-        .json({
-          message: "Authentication Failed",
-        })
-        .status(401);
-    }
-    return res.send(user).status(200);
-  });
+  const user = await HELPER.validateUniqueCode(code);
+  //
+  // if code has no user, then return json with said message
+  //
+  if (!user) {
+    return res
+      .json({
+        message: "Failed To Authenticate",
+        reason: "Time Limit Exceeded",
+      })
+      .status(401);
+  }
+  HELPER.deleteUniqueCode(user.full_name);
+  return res.send(user).status(200);
 };
 
 WEB_ROUTER.route("/login").post((req, res) => loginWithCode(req, res));

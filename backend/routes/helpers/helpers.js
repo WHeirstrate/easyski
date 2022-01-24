@@ -11,6 +11,25 @@ function getNamePassword(name, password) {
   return [null, null, false];
 }
 
+async function validateUuid(uuid) {
+  KNEX("users")
+    .where("uuid", uuid)
+    .first()
+    .then((user) => {
+      console.log("user", user);
+      if (user) {
+        return [user.uuid, undefined];
+      }
+      return [
+        undefined,
+        {
+          message: "Failed To Add Code",
+          reason: "No User With This UUID",
+        },
+      ];
+    });
+}
+
 function isDuplicateEntry(name) {
   return KNEX("users")
     .where("full_name", name)
@@ -41,8 +60,24 @@ function validateUniqueCode(code) {
     .where("access_code", code)
     .first()
     .then((user) => {
-      if (user.login_validity >= Math.ceil(Date.now() / 1000)) return user;
-      return undefined;
+      if (!user) {
+        return [
+          undefined,
+          {
+            message: "Failed To Authenticate",
+            reason: "Incorrect Code",
+          },
+        ];
+      }
+      if (user.login_validity >= Math.ceil(Date.now() / 1000))
+        return [user, undefined];
+      return [
+        undefined,
+        {
+          message: "Failed To Authenticate",
+          reason: "Time Limit Exceeded",
+        },
+      ];
     });
 }
 
@@ -56,21 +91,21 @@ async function decodePassword(hash, pass) {
   return result;
 }
 
-function deleteUniqueCode(name) {
-  KNEX("users")
+async function deleteUniqueCode(name) {
+  return await KNEX("users")
     .where("full_name", name)
     .update({
       login_validity: null,
       access_code: null,
     })
-    .returning("*")
-    .then((user) => {
-      console.log(user);
+    .then(() => {
+      return true;
     });
 }
 
 module.exports = {
   getNamePassword,
+  validateUuid,
   isDuplicateEntry,
   generateUniqueCode,
   validateUniqueCode,

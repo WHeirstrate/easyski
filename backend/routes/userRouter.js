@@ -4,11 +4,11 @@ const HELPER = require("./helpers/helpers");
 const USER_ROUTER = EXPRESS.Router();
 
 const addUserAndLogin = async (req, res) => {
-  const [name, password, isValid] = HELPER.getNamePassword(
+  const [name, password, is_valid] = HELPER.getNamePassword(
     req.body.name,
     req.body.password
   );
-  if (!isValid) {
+  if (!is_valid) {
     return res
       .json({
         message: "Failed To Create",
@@ -51,11 +51,11 @@ const getAllUsers = (req, res) => {
 };
 
 const login = async (req, res) => {
-  const [name, password, isValid] = HELPER.getNamePassword(
+  const [name, password, is_valid] = HELPER.getNamePassword(
     req.body.name,
     req.body.password
   );
-  if (!isValid) {
+  if (!is_valid) {
     return res
       .json({
         message: "Failed To Create",
@@ -86,14 +86,17 @@ const login = async (req, res) => {
 };
 
 const addRandomCode = async (req, res) => {
-  const uuid = req.body.uuid;
+  const [uuid, error] = await HELPER.validateUuid(req.body.uuid);
+  if (error) {
+    return res.json(error);
+  }
   const random_code = await HELPER.generateUniqueCode();
 
   KNEX("users")
     .where("uuid", uuid)
     .update({
       // the last number '60' is the amount of time the code is valid (in seconds)
-      login_validity: Math.ceil(Date.now() / 1000) + 60,
+      login_validity: Math.ceil(Date.now() / 1000) + 10,
       access_code: random_code,
     })
     .returning("access_code")

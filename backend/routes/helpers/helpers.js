@@ -12,7 +12,7 @@ function getNamePassword(name, password) {
 }
 
 async function validateUuid(uuid) {
-  KNEX("users")
+  return KNEX("users")
     .where("uuid", uuid)
     .first()
     .then((user) => {

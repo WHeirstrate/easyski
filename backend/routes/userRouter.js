@@ -69,6 +69,12 @@ const login = async (req, res) => {
     })
     .first()
     .then(async (user) => {
+      if (!user) {
+        return res.json({
+          message: "Failed To Authenticate",
+          reason: "Invalid Username",
+        });
+      }
       const isCorrectPassword = await HELPER.decodePassword(
         user.password,
         password

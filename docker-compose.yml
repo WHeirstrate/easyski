@@ -1,0 +1,30 @@
+version: "3.9"
+
+services:
+  #api:
+  #  build: ./backend
+  #  environment:
+  #    PG_CONNECTION_STRING: postgres://test:test@db:5432/database
+  #    PORT:
+  #  ports:
+  #    - 3000:3000
+  #  depends_on:
+  #    db:
+  #      condition: service_healthy
+
+  db:
+    image: "postgres:latest"
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: database
+    ports:
+      - 5432:5432
+    volumes:
+      - ./_volumes:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d database"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
